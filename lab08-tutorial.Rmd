@@ -1,0 +1,269 @@
+---
+title: "STATS 250 Lab 8"
+author: "Lab Dream Team"
+date: "Week of 3/15/2021"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    theme: lumen
+    css: assets/styles.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("plot_norm.R")
+source("prop_test.R")
+```
+
+# Learning Objectives
+
+## Statistical Learning Objectives
+1. Understand how confidence intervals are constructed
+1. Understand how hypothesis tests are run
+1. Working with both one proportion and two proportion examples
+
+## R Learning Objectives
+1. Interpret R output providing confidence intervals and hypothesis tests for inference on population proportions.
+
+## Functions covered in this lab
+1. `prop_test()`
+
+# Weekly Advice
+The function `prop_test()` will compute the results from both a hypothesis test and a confidence interval. You should pay close attention to the alternative hypothesis. If you are running a hypothesis test, be sure that the correct direction (`greater`, `less`, `two.sided`) is specified in `prop_test()`, otherwise your p-value will be inaccurate. If you are running a confidence interval, be sure that the direction is set to `two.sided`, which can be achieved by leaving the alternative hypothesis as the default. You can double-check your thinking by reading the output - the alternative hypothesis is printed in the 4th line of output.
+
+<hr />
+
+**MAKE SURE YOU RUN THE `setup` CHUNK ON LINE 14**
+
+# Lab Tutorial
+
+## Revisiting Lab 5's Example to Make a Confidence Interval for One Proportion
+
+In Lab 5, you worked this example using simulation. Last week you learned how to work this example using `pnorm()` and `plot_norm()`. Today we will learn a third way to work these types of research questions, and will expand upon a method to find possible values of the population proportion.
+
+:::{.background}
+In the Winter 2021 STATS 250 Student Survey, 1024 STATS 250 students out of 1533 reported occasional or daily use of alcohol.
+:::
+
+### Part 1: What are we trying to find? What do we know?
+
+> What is the population parameter of interest? 
+
+*Replace this text with your description of the parameter.*
+
+> What is the value of the point estimate of this parameter? Use R to find it, then report the value and the symbol below.
+
+```{r pointEstimate, error = T}
+# Use R as a calculator to find the point estimate.
+
+```
+
+**The point estimate has symbol _______ and the value is _______.**
+
+### Part 2: Check conditions.
+
+> Check if the conditions for constructing a **confidence interval** based on these data are met. You may assume that the sample is a random sample.
+
+The conditions that need to be satisfied in order to construct a confidence interval for one proportion:
+
+1. random sampling has occurred
+2. we have a sufficiently large sample size, meaning ALL of the following are true:
+    - $n\hat{p} \geq 10$
+    - $n(1-\hat{p}) \geq 10$
+
+```{r part2work, error = T}
+# Use this chunk to check conditions if necessary.
+
+```
+
+### Part 3: Compute a confidence interval.
+
+> Calculate a 95% confidence interval for the true proportion of Winter 2021 STATS 250 students who self-reported alcohol use.
+
+```{r proptestexample}
+prop_test(x = 1024, n = 1533, conf.level = 0.95)
+```
+
+In the code, `x` is the number of successes, `n` is the sample size, and `conf.level` is the confidence level.
+
+The 95% confidence interval is labeled as such: it's (0.644, 0.692). 
+
+**We are 95% confident that the true proportion of Stats 250 students who report occasional or daily use of alcohol is between ____% and ____%.**
+
+**Be careful with your alternative hypothesis.** If you want to run a confidence interval, the default of `two.sided` must be selected, otherwise you will end up with junk.
+
+## Revisiting Lab 5's Example to Run a Hypothesis Test for One Proportion
+
+### Part 1: Write the hypotheses
+
+Is the proportion of STATS 250 students who self-report alcohol consumption significantly higher than 55.3%, the proportion of American 12th graders who consumed alcohol? Write the hypotheses using symbols only, then define your parameter in context.
+
+- $H_0:$ *replace this text with your null hypothesis*
+- $H_A:$ *replace this text with your alternative hypothesis*
+
+where $p$ represents ________________________________________________.
+
+### Part 2: Check conditions
+
+> Check if the conditions for running a hypothesis test based on these data are met. You may assume that the sample is a random sample.
+
+The conditions that need to be satisfied in order to run a hypothesis test for one proportion:
+
+1. random sampling has occurred
+2. we have a sufficiently large sample size, meaning ALL of the following are true:
+    - $np_0 \geq 10$
+    - $n(1-p_0) \geq 10$,
+    
+where $p_{0}$ is the value from the **null hypothesis**. 
+
+```{r part2workHT, error = T}
+# Use this chunk to check conditions if necessary.
+
+```
+
+### Part 3: Run the hypothesis test
+
+We will need to send to `prop_test()` the observed count $x$, the sample size $n$, the value of the null hypothesis $p$, and the direction of the alternative hypothesis.
+
+```{r proptestexample2}
+prop_test(x = 1024, n = 1533, p = 0.553, alternative = "greater")
+```
+
+The value of the test statistic is Z = _________ and the p-value is ________.
+
+Some things to notice:
+- The 95% confidence interval is junk. The output reports that the interval is (0.648, 1.000). This is of no use to us, as we already know that proportions in general can be no larger than 1.000! **The confidence interval is junk when the alternative hypothesis is NOT set to `two.sided`.**
+- You can easily check your thoughts by viewing the output. Specifically, the third line, which here says *alternative hypothesis: true p is greater than 0.553*. Always do a sanity check: is this the correct alternative hypothesis?
+
+### Part 4: Make a conclusion
+
+Since our p-value is (small / large), we have (strong / little) evidence against the null hypothesis. Thus we have (strong / little) evidence to support that the true proportion of STATS 250 students who self-report consuming alcohol is _______________________________.
+
+## Revisiting Lab 6's Example to Make a Confidence Interval for Two Proportions
+
+In Lab 6, you worked this example using randomization. Last week you learned how to work an example for one proportion using `pnorm()` and `plot_norm()` -- the ideas are the same for a two-proportion test. Today we will learn a third way to work these types of research questions, and will expand upon a method to find possible values of the true difference in the proportions.
+
+:::{.background}
+We took a random sample of 200 STATS 250 students who responded to the Student Survey, which asked them to tell us whether they were a transfer student, as well as their residency status (in-state vs. out-of-state/international). Of the 200 sampled students, 32 transferred to U-M. 22 of those transfer students are in-state, while 10 of those transfer students were from out-of-state. Of the 200 sampled students, 168 did not transfer to U-M. 97 of those non-transfer students are from in-state, and 71 of those non-transfer students are from out-of-state.
+:::
+
+### Part 1: What are we trying to find? What do we know?
+
+> What is the population parameter of interest? 
+
+*Replace this text with your description of the parameter.*
+
+> What is the value of the point estimate of this parameter? Use R to find it, then report the value and the symbol below.
+
+```{r pointEstimate2, error = T}
+# Use R as a calculator to find the point estimate.
+
+```
+
+The point estimate has symbol _______ and the value is _______.
+
+### Part 2: Check conditions
+
+> Check if the conditions for constructing a confidence interval based on these data are met. You may assume that the sample is a random sample, such that each observation is independent of one another, and also independent between the two groups, transfer students and non-transfer students.
+
+The conditions that need to be satisfied in order to construct a confidence interval for two proportions:
+
+1. independence between groups, and independence within groups has been met
+2. we have a sufficiently large sample size, meaning ALL of the following are true:
+    - $n_1\hat{p}_1 \geq 10$
+    - $n_1(1-\hat{p}_1) \geq 10$
+    - $n_2\hat{p}_2 \geq 10$
+    - $n_2(1-\hat{p}_2) \geq 10$
+
+where $n_1$ and $n_2$ are the group 1 and 2 sample sizes, respectively, and $\hat{p}_1$ and $\hat{p}_2$ are the sample proportions in groups 1 and 2, respectively.
+
+```{r part2work2, error = T}
+# Use this chunk to check conditions if necessary.
+
+```
+
+### Part 3: Compute a confidence interval.
+
+> Calculate a 99% confidence interval for the true difference in proportions of in-state students for the two groups, transfer students and non-transfer students.
+
+Here we have 22 successes in Group A and 97 successes in Group B. We will combine these into a vector for `x`. We have a sample size of 32 in Group A and 168 in Group B, and we will combine these into a vector for `n`.
+
+```{r proptestexample2prop}
+prop_test(x = c(22, 97), n = c(32, 168), conf.level = 0.99)
+```
+
+The 99% confidence interval for the true difference in proportions of in-state students for the two groups, transfer students and non-transfer students, is (-0.123, 0.343).
+
+## Revisiting Lab 6's Example to Run a Hypothesis Test for Two Proportions
+
+### Part 1: Write the hypotheses
+
+Is the proportion of transfer students who are from in state greater than the proportion of non-transfer students who are from in state, based on the information from the Stats 250 student survey?” Write the hypotheses using symbols only, then define your parameter in context.
+
+- $H_0:$ *replace this text with your null hypothesis*
+- $H_A:$ *replace this text with your alternative hypothesis*
+
+where $p_1 - p_2$ represents ________________________________________________.
+
+### Part 2: Check conditions
+
+> Check if the conditions for running a hypothesis test based on these data are met. You may assume that the sample is a random sample, such that each observation is independent of one another, and also independent between the two groups, transfer students and non-transfer students.
+
+The conditions that need to be satisfied in order to run a hypothesis test for two proportions:
+
+1. independence between groups, and independence within groups has been met
+2. we have a sufficiently large sample size, meaning ALL of the following are true:
+    - $n_1\hat{p} \geq 10$
+    - $n_1(1-\hat{p}) \geq 10$
+    - $n_2\hat{p} \geq 10$ 
+    - $n_2(1-\hat{p}) \geq 10$
+    
+where $$\hat{p} = \frac{x_1 + x_2}{n_1 + n_2}$$ is the **pooled estimate of the sample proportion**.
+
+```{r part2workHT2, error = T}
+# Use this chunk to compute p-hat and then to check the conditions
+
+```
+
+### Part 3: Run the hypothesis test
+
+We will need to send to `prop_test()` the vector of observed counts $x$, the vector of sample sizes $n$, and the direction of the alternative hypothesis. Note that the value of the null hypothesis, 0, is the same in every difference in two proportions hypothesis test, so no need to tell R!
+
+```{r proptestexample3}
+prop_test(x = c(22, 97), n = c(32, 168), alternative = "greater")
+```
+
+The value of the test statistic is Z = _________ and the p-value is ________.
+
+### Part 4: Make a conclusion
+
+Since our p-value is (small / large), we have (strong / little) evidence against the null hypothesis. Thus we have (strong / little) evidence to support that the true difference in proportions of in-state students for the two group, transfer students and non-transfer students, is _________________________________.
+
+
+# Code Cheat Sheet
+
+## `prop_test(x, n, conf.level, alternative)` (one proportion CI)
+- `x` is the number of successes (observed counts)
+- `n` is the sample size
+- `conf.level` is the confidence level desired
+- `alternative` is set to `two.sided` as a default to provide a CI
+
+## `prop_test(x, n, p, alternative)` (one proportion HT)
+- `x` is the number of successes (observed counts)
+- `n` is the sample size
+- `p` is the value of the null hypothesis
+- `alternative` is the direction of the alternative hypothesis (`greater`, `less`, `two.sided`), where `two.sided` is the default
+
+## `prop_test(x = c(a,b), n = c(f,g), conf.level, alternative)` (two proportion CI)
+- `x` is a vector of the successes (observed counts) where a is for the first group and b is for the second group
+- `n` is a vector of the sample sizes where f is for the first group and g is for the second group
+- `conf.level` is the confidence level desired
+- `alternative` is set to `two.sided` as a default to provide a CI
+
+## `prop_test(x = c(a,b), n = c(f,g), alternative)` (two proportion CI)
+- `x` is a vector of the successes (observed counts) where a is for the first group and b is for the second group
+- `n` is a vector of the sample sizes where f is for the first group and g is for the second group
+- `alternative` is set to `two.sided` as a default to provide a CI
+- Note that we do NOT need to send the value of the null hypothesis, since the value is always 0, and R knows this!
