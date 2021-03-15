@@ -42,7 +42,7 @@ A 2012 Gallup Poll surveyed Americans about their employment status and whether 
 
 ## Question 1
 :::{.question}
-Create a two-way table to present the results of this study. You'll need to define what a success and failure are, as well as what Group A and Group B are. Round *up* to whole numbers of people.
+Create a two-way table to present the results of this study. You'll need to define what a success and failure are, as well as what Group A and Group B are. Round to whole numbers of people.
 :::
 
 :::{.answer}
